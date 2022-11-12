@@ -1,0 +1,1 @@
+This repository contains code used in blog post about [A/B testing with zero inflated (truncated) Poisson random variables](a-b-testing-zero-inflated-truncated-distributions-and-power). Most of the code is in `zero-inflated-truncated-models.Rmd` with exception of the Bayesian model example which was done in pymc and is in `pymc.ipynb`.
