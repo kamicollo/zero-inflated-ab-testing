@@ -78,7 +78,7 @@ generate_tibble("control", n, p = 0.3, lambda = 4, upper_limit = 7) %>%
     panel.grid.minor = element_blank()
   )
 
-ggsave("Basic ZIP histogram.png", width=7, height=5)
+ggsave("images/Basic ZIP histogram.png", width=7, height=5)
 ```
 
 # Creating hypothetical treatment and control groups
@@ -92,7 +92,8 @@ summary_stats = joint_dt %>% group_by(group, p, lambda, n) %>%
     sample_mean = mean(count),
     sample_var = var(count),
     .groups='drop'
-  )
+  ) %>% 
+  rename(λ = lambda, π=p)
 
 treatments = c('treatment1', 'treatment2', 'treatment3')
 
@@ -156,7 +157,7 @@ charts = lapply(
 
 
 c = grid.arrange(arrangeGrob(grobs=charts, ncol=3))
-ggsave("density_illustration.png", c, width=21, height=7)
+ggsave("images/density_illustration.png", c, width=21, height=7)
 
 ```
 
@@ -335,9 +336,10 @@ plot_results = function(df, level=0.99) {
   mutate(term = str_replace_all(
     term, 
     c('treatment1', 'treatment2', 'treatment3'), 
-    c('treatment1: π + 0.05', 'treatment2: λ + 0.5', 'treatment3: π + 0.08; λ + 0.5')
+    c('Treatment 1: \n π + 0.05', 'Treatment 2: \n λ + 0.5', 'Treatment 3: \n π + 0.08; λ + 0.5')
   )) %>%
   ggplot() + 
+    geom_hline(yintercept = 0, linetype='dotted') + 
   geom_point(aes(x=term, y=effect, color=significance)) + 
   geom_text(
     aes(
@@ -350,14 +352,14 @@ plot_results = function(df, level=0.99) {
     size=3) + 
   geom_errorbar(aes(x=term, ymin=lower, ymax=upper, color=significance)) + 
   facet_wrap(~test, nrow=1) + ylab("effect on linear scale") +
-  xlab('Treatment') + theme_bw() +
+  xlab('') + theme_bw() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 }
 
 
 
 plot_results(results, level=0.95)
-ggsave('recovered_coefficients_missp.png', width=15, height=5)
+ggsave('images/recovered_coefficients_missp.png', width=12, height=4)
 
 
 test_zeroinfl(joint_dt, level=0.95) %>%
@@ -365,7 +367,7 @@ test_zeroinfl(joint_dt, level=0.95) %>%
   mutate(test = str_replace(test, "-count", " λ")) %>%
   plot_results(level=0.95)
 
-ggsave('recovered_coefficients_zipf.png', width=15, height=5)
+ggsave('images/recovered_coefficients_zipf.png', width=12, height=4)
 ```
 
 
@@ -586,7 +588,7 @@ ggplot(power_results, aes(x=group, y=power, color=test, fill=test)) +
   ) + ggtitle("Power comparisons at N=3000")
 
 
-ggsave('power_comparisons.png', width=7, height=4)
+ggsave('images/power_comparisons.png', width=7, height=4)
 ```
 ```{r comp_powers, fig.height=5, fig.width=10}
 bind_rows(th_results, power_results) %>% 
@@ -601,7 +603,7 @@ ggplot() +
     panel.grid.minor.x = element_blank()
   ) + ggtitle("Power estimated via simulation vs. computed via large sample")
 
-ggsave("Simulated vs. actual power compared.png", width=10, height=5)
+ggsave("images/Simulated vs. actual power compared.png", width=10, height=5)
 ```
 
 
@@ -659,7 +661,7 @@ ggplot(power_df, mapping=aes(x=n, y=power, color=test, fill=test)) +
   ) + ggtitle("Power comparisons at different sample sizes") +
   scale_x_continuous(breaks = seq(500,3000,500))
 
-ggsave("power_at_different_n.png", width=15, height=5)
+ggsave("images/power_at_different_n.png", width=15, height=5)
 ```
 
 ## Using Bayesian optimization to find required sample size
